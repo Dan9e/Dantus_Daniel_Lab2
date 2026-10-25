@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Dantus_Daniel_Lab2.Migrations
 {
     [DbContext(typeof(Dantus_Daniel_Lab2Context))]
-    [Migration("20261025203532_BookCategoryModif")]
+    [Migration("20261025212855_BookCategoryModif")]
     partial class BookCategoryModif
     {
         /// <inheritdoc />
@@ -89,14 +89,14 @@ namespace Dantus_Daniel_Lab2.Migrations
                     b.Property<int>("BookID")
                         .HasColumnType("int");
 
-                    b.Property<int>("categoryID")
+                    b.Property<int>("CategoryID")
                         .HasColumnType("int");
 
                     b.HasKey("ID");
 
                     b.HasIndex("BookID");
 
-                    b.HasIndex("categoryID");
+                    b.HasIndex("CategoryID");
 
                     b.ToTable("BookCategory");
                 });
@@ -160,7 +160,7 @@ namespace Dantus_Daniel_Lab2.Migrations
 
                     b.HasOne("Dantus_Daniel_Lab2.Models.Category", "Category")
                         .WithMany("BookCategories")
-                        .HasForeignKey("categoryID")
+                        .HasForeignKey("CategoryID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

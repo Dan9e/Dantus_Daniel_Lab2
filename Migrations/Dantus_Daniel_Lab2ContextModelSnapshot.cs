@@ -86,14 +86,14 @@ namespace Dantus_Daniel_Lab2.Migrations
                     b.Property<int>("BookID")
                         .HasColumnType("int");
 
-                    b.Property<int>("categoryID")
+                    b.Property<int>("CategoryID")
                         .HasColumnType("int");
 
                     b.HasKey("ID");
 
                     b.HasIndex("BookID");
 
-                    b.HasIndex("categoryID");
+                    b.HasIndex("CategoryID");
 
                     b.ToTable("BookCategory");
                 });
@@ -157,7 +157,7 @@ namespace Dantus_Daniel_Lab2.Migrations
 
                     b.HasOne("Dantus_Daniel_Lab2.Models.Category", "Category")
                         .WithMany("BookCategories")
-                        .HasForeignKey("categoryID")
+                        .HasForeignKey("CategoryID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

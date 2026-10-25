@@ -1,51 +1,67 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
-using Dantus_Daniel_Lab2.Migrations;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Dantus_Daniel_Lab2.Models
 {
-    public class BookCategoriesPageModel: PageModel
+    public class BookCategoriesPageModel : PageModel
     {
-        public List<AssignedCategoryData> AssignedCategoryDataList;
+        public List<AssignedCategoryData> AssignedCategoryDataList = new();
+
         public void PopulateAssignedCategoryData(Dantus_Daniel_Lab2Context context, Book book)
         {
             var allCategories = context.Category;
-            var bookCategories = new HashSet<int>(book.BookCategories.Select(c => c.CategoryID));
+            var bookCategories = new HashSet<int>(
+                (book.BookCategories ?? new List<BookCategory>()).Select(c => c.CategoryID));
             AssignedCategoryDataList = new List<AssignedCategoryData>();
-            foreach (var category in allCategories)
+            foreach (var cat in allCategories)
             {
                 AssignedCategoryDataList.Add(new AssignedCategoryData
                 {
-                    CategoryID = category.ID,
-                    Name = category.Name,
-                    Assigned = bookCategories.Contains(category.ID)
+                    CategoryID = cat.ID,
+                    Name = cat.CategoryName,
+                    Assigned = bookCategories.Contains(cat.ID)
                 });
             }
         }
 
-        public void UpdateBookCategories(Dantus_Daniel_Lab2Context context, string[] selectedCategories, Book bookToUpdate)
+        public void UpdateBookCategories(Dantus_Daniel_Lab2Context context,
+            string[]? selectedCategories, Book bookToUpdate)
         {
-            if (selectedCategories == null)
+            bookToUpdate.BookCategories ??= new List<BookCategory>();
+
+            if (selectedCategories == null || selectedCategories.Length == 0)
             {
-                bookToUpdate.BookCategories = new List<BookCategory>();
+                // nicio categorie bifata: le stergem pe cele existente
+                context.RemoveRange(bookToUpdate.BookCategories.ToList());
                 return;
             }
+
             var selectedCategoriesHS = new HashSet<string>(selectedCategories);
-            var bookCategories = new HashSet<int>(bookToUpdate.BookCategories.Select(c => c.CategoryID));
-            foreach (var category in context.Category)
+            var bookCategories = new HashSet<int>(
+                bookToUpdate.BookCategories.Select(c => c.CategoryID));
+
+            foreach (var cat in context.Category)
             {
-                if (selectedCategoriesHS.Contains(category.ID.ToString()))
+                if (selectedCategoriesHS.Contains(cat.ID.ToString()))
                 {
-                    if (!bookCategories.Contains(category.ID))
+                    if (!bookCategories.Contains(cat.ID))
                     {
-                        bookToUpdate.BookCategories.Add(new BookCategory { BookID = bookToUpdate.ID, CategoryID = category.ID });
+                        bookToUpdate.BookCategories.Add(new BookCategory
+                        {
+                            BookID = bookToUpdate.ID,
+                            CategoryID = cat.ID
+                        });
                     }
                 }
                 else
                 {
-                    if (bookCategories.Contains(category.ID))
+                    if (bookCategories.Contains(cat.ID))
                     {
-                        BookCategory bookToRemove = bookToUpdate.BookCategories.FirstOrDefault(c => c.CategoryID == category.ID);
-                        context.Remove(bookToRemove);
+                        var bookToRemove = bookToUpdate.BookCategories
+                            .FirstOrDefault(i => i.CategoryID == cat.ID);
+                        if (bookToRemove != null)
+                        {
+                            context.Remove(bookToRemove);
+                        }
                     }
                 }
             }

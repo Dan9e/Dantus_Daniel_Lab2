@@ -30,7 +30,7 @@ namespace Dantus_Daniel_Lab2.Migrations
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     BookID = table.Column<int>(type: "int", nullable: false),
-                    categoryID = table.Column<int>(type: "int", nullable: false)
+                    CategoryID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -42,8 +42,8 @@ namespace Dantus_Daniel_Lab2.Migrations
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_BookCategory_Category_categoryID",
-                        column: x => x.categoryID,
+                        name: "FK_BookCategory_Category_CategoryID",
+                        column: x => x.CategoryID,
                         principalTable: "Category",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
@@ -55,9 +55,9 @@ namespace Dantus_Daniel_Lab2.Migrations
                 column: "BookID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BookCategory_categoryID",
+                name: "IX_BookCategory_CategoryID",
                 table: "BookCategory",
-                column: "categoryID");
+                column: "CategoryID");
         }
 
         /// <inheritdoc />
