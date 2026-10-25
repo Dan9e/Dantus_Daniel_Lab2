@@ -24,16 +24,15 @@ public class DeleteModel : PageModel
             return NotFound();
         }
 
-        var book = await _context.Book.FirstOrDefaultAsync(m => m.ID == id);
+        var book = await _context.Book
+            .Include(b => b.Author)
+            .Include(b => b.Publisher)
+            .FirstOrDefaultAsync(m => m.ID == id);
         if (book is null)
         {
             return NotFound();
         }
-        else
-        {
-            Book = book;
-        }
-
+        Book = book;
         return Page();
     }
 
@@ -47,8 +46,7 @@ public class DeleteModel : PageModel
         var book = await _context.Book.FindAsync(id);
         if (book != null)
         {
-            Book = book;
-            _context.Book.Remove(Book);
+            _context.Book.Remove(book);
             await _context.SaveChangesAsync();
         }
 

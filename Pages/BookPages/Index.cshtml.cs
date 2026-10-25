@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Dantus_Daniel_Lab2.Models;
@@ -15,11 +16,25 @@ public class IndexModel : PageModel
     }
 
     public IList<Book> Book { get; set; } = default!;
+    public SelectList Authors { get; set; } = default!;
+
+    [BindProperty(SupportsGet = true)]
+    public int? SelectedAuthorID { get; set; }
 
     public async Task OnGetAsync()
     {
-        Book = await _context.Book
+        Authors = new SelectList(await _context.Author.ToListAsync(), "ID", "FullName");
+
+        var books = _context.Book
             .Include(b => b.Publisher)
-            .ToListAsync();
+            .Include(b => b.Author)
+            .AsQueryable();
+
+        if (SelectedAuthorID.HasValue)
+        {
+            books = books.Where(b => b.AuthorID == SelectedAuthorID);
+        }
+
+        Book = await books.ToListAsync();
     }
 }

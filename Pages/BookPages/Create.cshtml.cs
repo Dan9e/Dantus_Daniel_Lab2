@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using Dantus_Daniel_Lab2.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Dantus_Daniel_Lab2.Models;
 
 namespace Dantus_Daniel_Lab2.Pages.BookPages;
 
@@ -15,20 +14,26 @@ public class CreateModel : PageModel
         _context = context;
     }
 
-    public IActionResult OnGet()
-    {
-        ViewData["PublisherID"] = new SelectList(_context.Set<Publisher>(), "ID", "PublisherName");
-        return Page();
-    }
-
     [BindProperty]
     public Book Book { get; set; } = default!;
 
-    // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD.
+    private void LoadLists()
+    {
+        ViewData["PublisherID"] = new SelectList(_context.Set<Publisher>(), "ID", "PublisherName");
+        ViewData["AuthorID"] = new SelectList(_context.Set<Author>(), "ID", "FullName");
+    }
+
+    public IActionResult OnGet()
+    {
+        LoadLists();
+        return Page();
+    }
+
     public async Task<IActionResult> OnPostAsync()
     {
         if (!ModelState.IsValid)
         {
+            LoadLists();
             return Page();
         }
 

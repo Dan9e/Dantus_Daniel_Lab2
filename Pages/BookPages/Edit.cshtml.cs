@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Dantus_Daniel_Lab2.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Dantus_Daniel_Lab2.Pages.BookPages;
 
@@ -18,6 +18,12 @@ public class EditModel : PageModel
     [BindProperty]
     public Book Book { get; set; } = default!;
 
+    private void LoadLists()
+    {
+        ViewData["PublisherID"] = new SelectList(_context.Set<Publisher>(), "ID", "PublisherName");
+        ViewData["AuthorID"] = new SelectList(_context.Set<Author>(), "ID", "FullName");
+    }
+
     public async Task<IActionResult> OnGetAsync(int? id)
     {
         if (id is null)
@@ -31,16 +37,15 @@ public class EditModel : PageModel
             return NotFound();
         }
         Book = book;
-        ViewData["PublisherID"] = new SelectList(_context.Set<Publisher>(), "ID", "PublisherName");
+        LoadLists();
         return Page();
     }
 
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see https://aka.ms/RazorPagesCRUD.
     public async Task<IActionResult> OnPostAsync()
     {
         if (!ModelState.IsValid)
         {
+            LoadLists();
             return Page();
         }
 
@@ -52,21 +57,13 @@ public class EditModel : PageModel
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!BookExists(Book.ID))
+            if (!_context.Book.Any(e => e.ID == Book.ID))
             {
                 return NotFound();
             }
-            else
-            {
-                throw;
-            }
+            throw;
         }
 
         return RedirectToPage("./Index");
-    }
-
-    private bool BookExists(int id)
-    {
-        return _context.Book.Any(e => e.ID == id);
     }
 }
