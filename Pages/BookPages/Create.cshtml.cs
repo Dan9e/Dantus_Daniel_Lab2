@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Dantus_Daniel_Lab2.Models;
 
 namespace Dantus_Daniel_Lab2.Pages.BookPages;
 
-public class CreateModel : PageModel
+public class CreateModel : BookCategoriesPageModel
 {
     private readonly Dantus_Daniel_Lab2Context _context;
 
@@ -19,21 +18,35 @@ public class CreateModel : PageModel
 
     private void LoadLists()
     {
-        ViewData["PublisherID"] = new SelectList(_context.Set<Publisher>(), "ID", "PublisherName");
-        ViewData["AuthorID"] = new SelectList(_context.Set<Author>(), "ID", "FullName");
+        ViewData["PublisherID"] = new SelectList(_context.Publisher, "ID", "PublisherName");
+        ViewData["AuthorID"] = new SelectList(_context.Author, "ID", "FullName");
     }
 
     public IActionResult OnGet()
     {
         LoadLists();
+
+        var book = new Book();
+        book.BookCategories = new List<BookCategory>();
+        PopulateAssignedCategoryData(_context, book);
         return Page();
     }
 
-    public async Task<IActionResult> OnPostAsync()
+    public async Task<IActionResult> OnPostAsync(string[] selectedCategories)
     {
+        Book.BookCategories = new List<BookCategory>();
+        if (selectedCategories != null)
+        {
+            foreach (var cat in selectedCategories)
+            {
+                Book.BookCategories.Add(new BookCategory { CategoryID = int.Parse(cat) });
+            }
+        }
+
         if (!ModelState.IsValid)
         {
             LoadLists();
+            PopulateAssignedCategoryData(_context, Book);
             return Page();
         }
 

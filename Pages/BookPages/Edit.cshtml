@@ -10,7 +10,7 @@
 <h4>Book</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Book.ID" />
@@ -44,31 +44,19 @@
                 <span asp-validation-for="Book.PublisherID" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <div class="table">
-                    <table>
-                        <tr>
-                        @{
-                            int cnt = 0;
-                            foreach (var cat in Model.AssignedCategoryDataList)
-                            {
-                                if (cnt++ % 3 == 0)
-                                {
-                                    @:</tr><tr>
-                                }
-                                @:<td>
-                                <input type="checkbox"
-                                       name="selectedCategories"
-                                       value="@cat.CategoryID"
-                                       @(cat.Assigned ? "checked=\"checked\"" : "") />
-                                @cat.CategoryID @: @cat.Name
-                                @:</td>
-                            }
-                            @:</tr>
-                        }
-                    </table>
+                <label class="control-label">Categories</label>
+                <div>
+@foreach (var cat in Model.AssignedCategoryDataList)
+{
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" class="form-check-input" id="cat_@cat.CategoryID"
+                               name="selectedCategories" value="@cat.CategoryID" checked="@cat.Assigned" />
+                        <label class="form-check-label" for="cat_@cat.CategoryID">@cat.CategoryID @cat.Name</label>
+                    </div>
+}
                 </div>
             </div>
-            <div class="form-group">
+            <div class="form-group mt-3">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
